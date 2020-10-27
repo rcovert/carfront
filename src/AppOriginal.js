@@ -6,7 +6,6 @@ import CarFrontContext from './context/carfront-context';
 import Header1 from './components/Header1';
 import Header2 from './components/Header2';
 import carsReducer from './reducers/carsReducer.js';
-import Login from './components/Login';
 
 function App() {
 
@@ -16,34 +15,16 @@ function App() {
   const [cars, setCars] = useState([]);
   const [state, dispatch] = useReducer(carsReducer, [])
 
-  // return (
-  //   <div className='App' >
-  //     <CarFrontContext.Provider value={{
-  //       isAuthenticated,
-  //       setAuth, user, setUser,
-  //       isAddCar, setIsAddCar, setCars, cars
-  //     }} >
-  //     <div>
-  //       {(isAuthenticated) ? <Header2 /> : <Header1 />}
-  //       <AppRouter />
-  //       </div>
-  //     </CarFrontContext.Provider>
-  //   </div>
-  // );
   return (
     <div className='App' >
-      <CarFrontContext.Provider value={{
-        isAuthenticated,
-        setAuth, user, setUser,
-        isAddCar, setIsAddCar, setCars, cars
-      }} >
-        <div>
-          <AppRouter />
-        </div>
+      <CarFrontContext.Provider value={{ isAuthenticated, 
+        setAuth, user, setUser, 
+        isAddCar, setIsAddCar, setCars, cars }} >
+        {(isAuthenticated) ? <Header2 /> : <Header1 />}
+        <AppRouter />
       </CarFrontContext.Provider>
     </div>
   );
-
 }
 
 export default App;
