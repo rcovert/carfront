@@ -1,8 +1,8 @@
 import React from 'react';
 import { Router, Route, Switch } from 'react-router-dom';
 import Login from '../components/Login';
-import NewCarList6 from '../components/NewCarList6'
-import createHistory from 'history/createBrowserHistory'
+import Dashboard from '../components/Dashboard';
+import createHistory from 'history/createBrowserHistory';
 import SecuredRoute from './SecuredRoute';
 
 export const history = createHistory();
@@ -12,7 +12,7 @@ const AppRouter = () => (
         <div>
             <Switch>
                 <Route path="/" component={Login} exact={true} />
-                <SecuredRoute path="/carlist" component={NewCarList6} />
+                <SecuredRoute path="/carlist" component={Dashboard} />
             </Switch>
         </div>
     </Router>

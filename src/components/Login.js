@@ -1,18 +1,17 @@
 import React, { useContext } from 'react';
 import { useHistory } from "react-router-dom";
-import { SERVER_URL } from '../constants.js';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CarFrontContext from '../context/carfront-context';
-import Header1 from './Header1.js';
+import Header from './Header.js';
+import { SERVER_URL } from '../constants.js';
 
 const Login = () => {
 
     // retrieve items from context
     const { user, setUser } = useContext(CarFrontContext);
-    let { isAuthenticated } = useContext(CarFrontContext);
     const { setAuth } = useContext(CarFrontContext);
     const history = useHistory();
 
@@ -27,7 +26,6 @@ const Login = () => {
             })
             return;
         }
-        // console.log(user);
         fetch(SERVER_URL + 'login', {
             method: 'POST',
             body: JSON.stringify(user)
@@ -50,7 +48,7 @@ const Login = () => {
 
     return (
         <div>
-            <Header1 />
+            <Header />
             <ToastContainer autoClose={1500} />
             <TextField name="username"
                 label="Username" onChange={handleChange} required={true} /><br />

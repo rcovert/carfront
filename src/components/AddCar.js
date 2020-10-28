@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { SERVER_URL } from '../constants.js';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -9,25 +10,30 @@ import CarFrontContext from '../context/carfront-context';
 
 const AddCar = (props) => {
 
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const [car, setCar] = useState({
         brand: '', model: '', color: '', year: '', fuel: '', price: ''
     });
     const [error, setError] = useState(false)
     const [errorText, setErrorText] = useState('');
-    const { setIsAddCar } = useContext(CarFrontContext);
+    const { setIsAddCar, setCarFetch, carFetch } = useContext(CarFrontContext);
 
-    // Open the modal form
-    // useEffect(() => {
-    //     console.log('add car this should only run once')
-    //     setCar({ brand: '', model: '', color: '', year: '', fuel: '', price: '' })
-    //     setOpen(true);
-    // }, []);
-
-    // Open the modal form
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
+    const addCar = (car) => {
+        const token = sessionStorage.getItem("jwt");
+        fetch(SERVER_URL + 'api/cars',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify(car)
+            })
+            .then(res => { 
+                console.log('need to re-fetch');
+                setCarFetch(carFetch + 1); })
+            .catch(err => console.error(err))
+    }
 
     // Close the modal form
     const handleClose = () => {
@@ -41,15 +47,19 @@ const AddCar = (props) => {
     // Save car and close modal form
     // note POST function api is in the parent
     const handleSave = () => {
-        if (car.model && car.brand && car.year & car.price) {
-            props.addCar(car);
+        if (car.model && car.brand && car.year && car.price) {
+            addCar(car);
+            //setCarFetch(carFetch + 1);
             handleClose();
         } else {
             setError(true);
             setErrorText('Incomplete information');
             //window.confirm('Incomplete information.  Please add all required car fields.')
         }
-        //handleClose();
+    }
+
+    const handleTest = () => {
+        setCarFetch(carFetch + 1);
     }
 
     const handleChange = (event) => {
@@ -57,7 +67,6 @@ const AddCar = (props) => {
     }
     return (
         <div>
-            <Button style={{ margin: 10 }} variant='contained' color='primary' onClick={handleClickOpen}>New Car</Button>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>New car</DialogTitle>
                 <DialogContent>
@@ -77,6 +86,7 @@ const AddCar = (props) => {
                 <DialogActions>
                     <Button color="secondary" onClick={handleClose}>Cancel</Button>
                     <Button color="primary" onClick={handleSave}>Save</Button>
+                    <Button color="primary" onClick={handleTest}>Up</Button>
                 </DialogActions>
             </Dialog>
         </div>
