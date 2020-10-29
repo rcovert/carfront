@@ -9,7 +9,6 @@ function App() {
   const [isAuthenticated, setAuth] = useState(false);
   const [user, setUser] = useState({ username: '', password: '' });
   const [isAddCar, setIsAddCar] = useState(false);
-  const [carFetch, setCarFetch] = useState(7);
   const [cars, setCars] = useState([]);
   // const [state, dispatch] = useReducer(carsReducer, [])
 
@@ -18,8 +17,7 @@ function App() {
       <CarFrontContext.Provider value={{
         isAuthenticated,
         setAuth, user, setUser,
-        isAddCar, setIsAddCar, setCars, cars,
-        carFetch, setCarFetch
+        isAddCar, setIsAddCar, setCars, cars
       }} >
         <div>
           <AppRouter />

@@ -1,23 +1,28 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { SERVER_URL } from '../constants.js';
 import { DataGrid } from '@material-ui/data-grid';
-import Button from '@material-ui/core/Button';
+import { ToastContainer } from 'react-toastify';
 import CarFrontContext from '../context/carfront-context';
 import Header from './Header';
+import AddCar from './AddCar';
+import DeleteCar from './DeleteCar';
+import EditCar from './EditCar';
 import uuid from 'react-uuid';
 
 const Dashboard = () => {
 
     const [rows, setRows] = useState([]); // rows are required for data grid
-    const { cars, setCars, carFetch, setCarFetch } = useContext(CarFrontContext);
+    const { cars, setCars, isAddCar } = useContext(CarFrontContext);
+    let currentCar = {};
 
     //const [cars, dispatch] = useReducer(carsReducer, []);
 
-    useEffect(() => {
-        // get car data - should try to use reducer
-        // dispatch({ type: 'FETCH_CARS', cars: [] });
-        console.log('car fetch from page load = ' + carFetch);
+    function fetchCars() {
+        // this function calls the get api on cars
+        // and then sets cars array, which in turn 
+        // sets the rows for the data grid
         const token = sessionStorage.getItem("jwt");
+        // console.log('fetch called');
         fetch(SERVER_URL + 'api/cars',
             {
                 headers: { 'Authorization': token }
@@ -25,36 +30,40 @@ const Dashboard = () => {
             .then((response) => response.json())
             .then((responseData) => {
                 setCars(responseData._embedded.cars);
+                //console.log(rows);
             })
             .catch(err => console.error(err));
+    }
+
+    // function usePrevious(value) {
+    //     const ref = useRef();
+    //     useEffect(() => {
+    //         ref.current = value;
+    //     });
+    //     return ref.current;
+    // }
+
+    useEffect(() => {
+        // on first time page load
+        // just need to trigger car fetch by 
+        fetchCars();
+        // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
-        // get car data - should try to use reducer
-        // dispatch({ type: 'FETCH_CARS', cars: [] });
-        // this is actually the re-fetch
-        //if (carFetch) {
-        const token = sessionStorage.getItem("jwt");
-        console.log('car fetch 2 = ' + carFetch);
-        fetch(SERVER_URL + 'api/cars',
-            {
-                headers: { 'Authorization': token }
-            })
-            .then((response) => response.json())
-            .then((responseData) => {
-                setCars(responseData._embedded.cars);
-                //setCarFetch(0);
-            })
-            .catch(err => console.error(err));
-        //}
-    }, [carFetch]);
-
-    useEffect(() => {
-        let nrows = cars.map((car) => ({ id: uuid(), ...car }));
+        // this effect maps the api retrieve results to
+        // the grid rows and is fired whenever there is a change
+        // to the cars array (add, edit, delete)
+        let nrows = cars.map((car) => ({ id: uuid(), rowLink: car._links.self.href, ...car }));
         setRows(nrows);
-        //console.log(rows);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cars]);
+
+    function handleOnRowHover(RowParams) {
+        // need this to get the current car
+        currentCar = RowParams.data;
+        // console.log('current car is ', currentCar);
+    }
 
     const columns = [{
         headerName: 'Brand',
@@ -78,39 +87,26 @@ const Dashboard = () => {
         width: 130
     }, {
         field: 'edit',
-        headerName: '|',
-        renderCell: () => (
-            <strong>
-                <Button
-                    variant="contained"
-                    size="small"
-                    style={{ marginLeft: 16 }}
-                >
-                    Edit
-              </Button>
-            </strong>
-        )
+        headerName: '| Edit',
+        renderCell: ({ value, row }) => (<EditCar car={currentCar} link={currentCar.rowLink}
+            fetchCars={fetchCars} />)
     }, {
         field: 'delete',
-        headerName: '|',
-        renderCell: () => (
-            <strong>
-                <Button
-                    variant="contained"
-                    size="small"
-                    style={{ marginLeft: 16 }}
-                >
-                    Delete
-              </Button>
-            </strong>
+        headerName: '| Delete',
+        renderCell: ({ value, row }) => (<DeleteCar car={currentCar} link={currentCar.rowLink}
+                fetchCars={fetchCars} />
         )
     }]
 
     return (
-        <div><Header />
+        <div>
+            <ToastContainer autoClose={1500} />
+            <Header />
             <div style={{ height: 400, width: '100%' }}>
-                <DataGrid rows={rows} columns={columns} pageSize={10} checkboxSelection />
+                <DataGrid rows={rows} columns={columns} pageSize={10} checkboxSelection
+                    onRowHover={handleOnRowHover} />
             </div>
+            {(isAddCar) ? <AddCar fetchCars={fetchCars} /> : null}
         </div>
     );
 }

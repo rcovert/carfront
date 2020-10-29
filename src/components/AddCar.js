@@ -14,9 +14,9 @@ const AddCar = (props) => {
     const [car, setCar] = useState({
         brand: '', model: '', color: '', year: '', fuel: '', price: ''
     });
-    const [error, setError] = useState(false)
+    const [errorType, setErrorType] = useState(false)
     const [errorText, setErrorText] = useState('');
-    const { setIsAddCar, setCarFetch, carFetch } = useContext(CarFrontContext);
+    const { setIsAddCar } = useContext(CarFrontContext);
 
     const addCar = (car) => {
         const token = sessionStorage.getItem("jwt");
@@ -30,14 +30,15 @@ const AddCar = (props) => {
                 body: JSON.stringify(car)
             })
             .then(res => { 
-                console.log('need to re-fetch');
-                setCarFetch(carFetch + 1); })
+                //console.log('inside add event need to re-fetch cars');
+                // change in carFetch state will trigger new fetch api
+                props.fetchCars() })
             .catch(err => console.error(err))
     }
 
     // Close the modal form
     const handleClose = () => {
-        setError(false)
+        setErrorType(false)
         setErrorText('')
         setCar({ brand: '', model: '', color: '', year: '', fuel: '', price: '' })
         setOpen(false);
@@ -52,19 +53,16 @@ const AddCar = (props) => {
             //setCarFetch(carFetch + 1);
             handleClose();
         } else {
-            setError(true);
+            setErrorType(true);
             setErrorText('Incomplete information');
             //window.confirm('Incomplete information.  Please add all required car fields.')
         }
     }
 
-    const handleTest = () => {
-        setCarFetch(carFetch + 1);
-    }
-
     const handleChange = (event) => {
         setCar({ ...car, [event.target.name]: event.target.value });
     }
+
     return (
         <div>
             <Dialog open={open} onClose={handleClose}>
@@ -72,7 +70,7 @@ const AddCar = (props) => {
                 <DialogContent>
                     <TextField autoFocus fullWidth label="Brand" name="brand"
                         value={car.brand} onChange={handleChange}
-                        required={true} error={error}
+                        required={true} error={errorType}
                         helperText={errorText} />
                     <TextField fullWidth label="Model" name="model"
                         value={car.model} onChange={handleChange} />
@@ -86,7 +84,6 @@ const AddCar = (props) => {
                 <DialogActions>
                     <Button color="secondary" onClick={handleClose}>Cancel</Button>
                     <Button color="primary" onClick={handleSave}>Save</Button>
-                    <Button color="primary" onClick={handleTest}>Up</Button>
                 </DialogActions>
             </Dialog>
         </div>

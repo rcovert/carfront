@@ -18,24 +18,22 @@ import { useHistory } from "react-router-dom";
 import CarFrontContext from '../context/carfront-context';
 // eslint-disable-next-line no-unused-vars
 import { unstable_createMuiStrictModeTheme } from '@material-ui/core/styles';
-import AddCar from './AddCar';
 
-const useStyles = makeStyles((unstable_createMuiStrictModeTheme) => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
-
     },
     menuButton: {
-        marginRight: unstable_createMuiStrictModeTheme.spacing(2),
+        marginRight: theme.spacing(2),
     },
     title: {
         flexGrow: 1,
     },
     extendedIcon: {
-        marginRight: unstable_createMuiStrictModeTheme.spacing(1),
+        marginRight: theme.spacing(1),
     },
     fabGreen: {
-        color: unstable_createMuiStrictModeTheme.palette.common.white,
+        color: theme.palette.common.white,
         backgroundColor: green[500],
         '&:hover': {
             backgroundColor: green[600],
@@ -50,7 +48,7 @@ export default function MenuAppBar() {
 
     const { isAuthenticated, setAuth } = useContext(CarFrontContext);
     const { setUser } = useContext(CarFrontContext);
-    const { isAddCar, setIsAddCar } = useContext(CarFrontContext);
+    const { setIsAddCar } = useContext(CarFrontContext);
     const history = useHistory();
 
     const handleMenu = (event) => {
@@ -62,8 +60,9 @@ export default function MenuAppBar() {
     };
 
     const handleAddCar = () => {
-        console.log('add car event handler');
+        // console.log('add car event handler');
         setIsAddCar(true);
+        handleClose();
     }
 
     const handleLogout = () => {
@@ -81,19 +80,19 @@ export default function MenuAppBar() {
             color: 'primary',
             className: classes.fab,
             icon: <UpIcon />,
-            label: 'Expand',
+            label: 'Expand'
         },
         {
             color: 'secondary',
             className: classes.fab,
             icon: <EditIcon />,
-            label: 'Edit',
+            label: 'Edit'
         },
         {
             color: 'inherit',
             className: clsx(classes.fab, classes.fabGreen),
             icon: <AddIcon />,
-            label: 'Add',
+            label: 'Add'
         },
     ];
 
@@ -146,7 +145,6 @@ export default function MenuAppBar() {
                         </div>)}
                 </Toolbar>
             </AppBar>
-            {(isAddCar) ? <AddCar /> : null}
         </div>
     );
 };

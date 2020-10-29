@@ -1,3 +1,14 @@
+<strong>
+                <Button
+                    variant="contained"
+                    size="small"
+                    style={{ marginLeft: 16 }}
+                >
+                    Edit
+              </Button>
+            </strong>
+
+
 from AddCar
 <Button style={{ margin: 10 }} variant='contained' color='primary' onClick={handleClickOpen}>New Car</Button>
 import React from 'react';
