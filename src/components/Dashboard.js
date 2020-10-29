@@ -94,7 +94,7 @@ const Dashboard = () => {
         field: 'delete',
         headerName: '| Delete',
         renderCell: ({ value, row }) => (<DeleteCar car={currentCar} link={currentCar.rowLink}
-                fetchCars={fetchCars} />
+            fetchCars={fetchCars} />
         )
     }]
 
@@ -102,12 +102,12 @@ const Dashboard = () => {
         <div>
             <ToastContainer autoClose={1500} />
             <Header />
-            <div style={{ height: 400, width: '100%' }}>
+            <div style={{ height: 500, width: '100%' }}>
                 <DataGrid rows={rows} columns={columns} pageSize={10} checkboxSelection
                     onRowHover={handleOnRowHover} />
             </div>
             {(isAddCar) ? <AddCar fetchCars={fetchCars} /> : null}
-        </div>
+        </div >
     );
 }
 

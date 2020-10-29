@@ -15,6 +15,7 @@
     "bootstrap": "^4.5.3",
     "mui-datatables": "^3.6.0",
     "react": "^17.0.1",
+    "react-app-polyfill": "^2.0.0",
     "react-csv": "^2.0.3",
     "react-data-grid": "^7.0.0-canary.26",
     "react-dom": "^17.0.1",
