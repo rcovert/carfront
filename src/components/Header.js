@@ -49,6 +49,7 @@ export default function MenuAppBar() {
     const { isAuthenticated, setAuth } = useContext(CarFrontContext);
     const { setUser } = useContext(CarFrontContext);
     const { setIsAddCar } = useContext(CarFrontContext);
+    const { eventSource } = useContext(CarFrontContext)
     const history = useHistory();
 
     const handleMenu = (event) => {
@@ -69,9 +70,11 @@ export default function MenuAppBar() {
         // set user back to null
         // erase the jwt from session storage
         // setAuth to false and push back to login
+        // turn off sse event source
         setUser({ username: '', password: '' });
         sessionStorage.removeItem("jwt");
         setAuth(false);
+        eventSource.close();
         history.push('/');
     };
 

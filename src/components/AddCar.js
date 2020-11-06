@@ -7,6 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import CarFrontContext from '../context/carfront-context';
+import { toast } from 'react-toastify';
 
 const AddCar = (props) => {
 
@@ -31,7 +32,10 @@ const AddCar = (props) => {
             })
             .then(res => { 
                 //console.log('inside add event need to re-fetch cars');
-                // change in carFetch state will trigger new fetch api
+                //use fetch cars from parent to refresh after add
+                toast.success("Vehicle added", {
+                    position: toast.POSITION.BOTTOM_LEFT
+                });
                 props.fetchCars() })
             .catch(err => console.error(err))
     }
