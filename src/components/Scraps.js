@@ -1,3 +1,47 @@
+.then((responseData) => {
+  setCars(responseData._embedded.cars);
+})
+
+function resetEventSource() {
+  console.log("should only be called once...");
+  //const urlString = "http://localhost:8080/greetings/reactConsumer";
+  const eventSource = new EventSource("http://localhost:8090/mono-sse");
+  // const theEventSource = new EventSource("http://localhost:8090/mono-sse");
+  // console.log(theEventSource.readyState);
+  console.log("SSE Ready State ", eventSource.readyState);
+  if (eventSource.readyState === 2) {
+      console.log("opening event source again...")
+      //eventSource = (new EventSource("http://localhost:8090/mono-sse"))
+  }
+  eventSource.addEventListener('open', () => console.log('SSE Open'));
+  eventSource.addEventListener('error', (err) => {
+      console.log('SSE Error', err);
+      // eslint-disable-next-line default-case
+      switch (err.target.readyState) {
+          case EventSource.CONNECTING:
+              console.log('Reconnecting...');
+              break;
+          case EventSource.CLOSED:
+              console.log('Connection failed, will not reconnect');
+              break;
+      }
+  }, false);
+  eventSource.addEventListener('message', (e) => console.log('SSE Data', e.data));
+  eventSource.addEventListener('periodic-event', (e) => console.log('SSE Data', e.data));
+  eventSource.addEventListener('single-event', (e) =>
+      console.log('SSE Data', JSON.parse(e.data)));
+}
+
+
+// function usePrevious(value) {
+    //     const ref = useRef();
+    //     useEffect(() => {
+    //         ref.current = value;
+    //     });
+    //     return ref.current;
+    // }
+
+
 <strong>
                 <Button
                     variant="contained"

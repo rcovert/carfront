@@ -1,6 +1,6 @@
 import { SERVER_URL } from '../constants.js'
 
-const carsReducer = (state, action) => {
+const carsReducer = (cars, action) => {
 
     async function fetchCars() {
         // Read the token from the session storage
@@ -20,34 +20,34 @@ const carsReducer = (state, action) => {
     switch (action.type) {
         case 'FETCH_CARS':
             console.log('inside of reducer switch');
-            //const token = sessionStorage.getItem("jwt");
-            // fetch(SERVER_URL + 'api/cars',
-            //     {
-            //         headers: { 'Authorization': token }
-            //     })
-            //     .then((response) => response.json())
-            //     .then((responseData) => {
-            //         action.cars = responseData._embedded.cars;
-            //         //console.log(responseData._embedded.cars);
-            //         console.log(action.cars);
-            //     })
-            //     .catch(err => console.error(err));
-            fetchCars();
+            const token = sessionStorage.getItem("jwt");
+            fetch(SERVER_URL + 'api/cars',
+                {
+                    headers: { 'Authorization': token }
+                })
+                .then((response) => response.json())
+                .then((responseData) => {
+                    cars = responseData._embedded.cars;
+                    //console.log(responseData._embedded.cars);
+                    console.log(cars);
+                })
+                .catch(err => console.error(err));
+            //fetchCars();
             console.log('post fetch');
-            console.log(action.cars);
-            return action.cars;
+            console.log("from reducer ", cars);
+            return cars;
         case 'ADD_CAR':
-            return [...state, { title: action.title, body: action.body }];
+            return [...cars, { title: action.title, body: action.body }];
         case 'REMOVE_CAR':
             console.log('title - ' + action.title);
             // return action.items.notes.filter((note) => note.title !== action.items.title);
-            return state.filter((note) => note.title !== action.title)
+            return cars.filter((note) => note.title !== action.title)
         case 'EDIT_CAR':
             console.log('update car here')
             return action.notes;
         default:
             console.log('default?');
-            return state;
+            return cars;
 
     }
 }

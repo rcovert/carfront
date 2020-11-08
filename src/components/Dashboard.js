@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import { SERVER_URL } from '../constants.js';
 import { DataGrid } from '@material-ui/data-grid';
 import { ToastContainer } from 'react-toastify';
@@ -8,85 +8,61 @@ import AddCar from './AddCar';
 import DeleteCar from './DeleteCar';
 import EditCar from './EditCar';
 import uuid from 'react-uuid';
-
 const Dashboard = () => {
 
     const [rows, setRows] = useState([]); // rows are required for data grid
     const [informData, setInformData] = useState([]);
-    
-    const { cars, setCars, isAddCar, setEventSource } = useContext(CarFrontContext);
-    const { eventSource } = useContext(CarFrontContext);
+    const { cars, setCars, isAddCar } = useContext(CarFrontContext);
+    const localCars = useRef(0);
+
     let currentCar = {};
+    let testArray = [];
 
-    //const [cars, dispatch] = useReducer(carsReducer, []);
-
-    function resetEventSource() {
-        console.log("should only be called once...");
-        
-        //const urlString = "http://localhost:8080/greetings/reactConsumer";
-        setEventSource(new EventSource("http://localhost:8090/mono-sse"));
-        
-        console.log("SSE Ready State ", eventSource.readyState);
-        if (eventSource.readyState === 2) { 
-            console.log("opening event source again...")
-            //eventSource = (new EventSource("http://localhost:8090/mono-sse"))
-            setEventSource(new EventSource("http://localhost:8090/mono-sse"))};
-        eventSource.addEventListener('open', () => console.log('SSE Open'));
-        eventSource.addEventListener('error', (err) => {
-            console.log('SSE Error', err);
-            // eslint-disable-next-line default-case
-            switch (err.target.readyState) {
-                case EventSource.CONNECTING:
-                    console.log('Reconnecting...');
-                    break;
-                case EventSource.CLOSED:
-                    console.log('Connection failed, will not reconnect');
-                    break;
-        
-            }}, false);
-        eventSource.addEventListener('message', (e) => console.log('SSE Data', e.data));
-        eventSource.addEventListener('periodic-event', (e) => console.log('SSE Data', e.data));
-        eventSource.addEventListener('single-event', (e) => 
-            console.log('SSE Data', JSON.parse(e.data)));
-
-        eventSource.onmessage = e => {
-            console.log(e.data);
-            //setInformData(informData.concat(JSON.parse(e.data)));
-            //console.log(informData);
-        }
-    }
-
-    function fetchCars() {
+    async function fetchCars() {
         // function calls the get api on cars
         //  and then sets cars array, which in turn 
         // sets the rows for the data grid
         const token = sessionStorage.getItem("jwt");
         // console.log('fetch called');
-        fetch(SERVER_URL + 'api/cars',
+        const results = await fetch(SERVER_URL + 'api/cars',
             {
                 headers: { 'Authorization': token }
             })
             .then((response) => response.json())
             .then((responseData) => {
                 setCars(responseData._embedded.cars);
-                //console.log(rows);
             })
             .catch(err => console.error(err));
     }
 
-    // function usePrevious(value) {
-    //     const ref = useRef();
-    //     useEffect(() => {
-    //         ref.current = value;
-    //     });
-    //     return ref.current;
-    // }
+    const processEventArray = (theArray) => {
+        console.log("event array: ", theArray);
+
+        //const carEvents = cars.map((theCar) => console.log(theCar) );
+        //var obj = JSON.parse(localCars.current[0]);
+
+        if (localCars.current[0] !== undefined) {
+            console.log("cars from process eventArray ", localCars);
+            console.log("cars from process eventArray ", localCars.current[0].price);
+            if (rows[0] !== undefined) {
+                console.log("rows from process eventArray ", rows[0]);
+            }
+        }
+    }
 
     useEffect(() => {
         // on first time page load
         // just need to trigger car fetch by 
         fetchCars();
-        resetEventSource();
+        // note need to fully define eventSource here for it to close properly
+        const eventSource = new EventSource("http://localhost:8090/mono-sse")
+        eventSource.addEventListener('single-event', (e) => {
+            //console.log('SSE Data', e.data);
+            const item = JSON.parse(e.data);
+            testArray.push(item);
+            processEventArray(testArray);
+        });
+        return () => { eventSource.close() }
         // eslint-disable-next-line
     }, []);
 
@@ -96,13 +72,24 @@ const Dashboard = () => {
         // to the cars array (add, edit, delete)
         let nrows = cars.map((car) => ({ id: uuid(), rowLink: car._links.self.href, ...car }));
         setRows(nrows);
+        // cars are set 
+        localCars.current = [...nrows];
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cars]);
 
     function handleOnRowHover(RowParams) {
         // need to get the current car
         currentCar = RowParams.data;
-        // console.log('current car is ', currentCar);
+        //console.log('current car is ', currentCar);
+    }
+
+    function handleOnRowSelected(RowParams) {
+        currentCar = RowParams.data;
+        //console.log('current car is ', currentCar)
+    }
+
+    function handleRowClick(rowData, rowState) {
+        console.log(rowData, rowState)
     }
 
     const columns = [{
@@ -144,7 +131,8 @@ const Dashboard = () => {
             <Header />
             <div style={{ height: 500, width: '100%' }}>
                 <DataGrid rows={rows} columns={columns} pageSize={10} checkboxSelection
-                    onRowHover={handleOnRowHover} />
+                    onRowHover={handleOnRowHover} onRowSelected={handleOnRowSelected}
+                    onRowClick={handleRowClick} />
             </div>
             {(isAddCar) ? <AddCar fetchCars={fetchCars} /> : null}
         </div >

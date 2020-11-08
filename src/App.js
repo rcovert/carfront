@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer } from 'react';
 import './App.css';
 import AppRouter from './routers/AppRouter';
 import CarFrontContext from './context/carfront-context';
+import FetchOneResource from './components/Test';
 // import carsReducer from './reducers/carsReducer.js';
 
 function App() {
@@ -10,16 +11,19 @@ function App() {
   const [user, setUser] = useState({ username: '', password: '' });
   const [isAddCar, setIsAddCar] = useState(false);
   const [cars, setCars] = useState([]);
-  let   [eventSource, setEventSource] = useState();
-  // const [state, dispatch] = useReducer(carsReducer, [])
+  
+  //const [cars, dispatch] = useReducer(carsReducer, [])
+
+  // const result = FetchOneResource();
+  // console.log("result is ", result)
+  //if (result !== "Loading..." ) {setCars(result._embedded.cars)};
 
   return (
     <div className='App' >
       <CarFrontContext.Provider value={{
         isAuthenticated,
         setAuth, user, setUser,
-        isAddCar, setIsAddCar, setCars, cars,
-        eventSource, setEventSource
+        isAddCar, setIsAddCar, cars, setCars
       }} >
         <div>
           <AppRouter />
