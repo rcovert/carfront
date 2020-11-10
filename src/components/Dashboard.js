@@ -7,7 +7,6 @@ const Dashboard = () => {
 
     const { cars, setCars } = useContext(CarFrontContext);
     let testArray = [];
-
     async function fetchCars() {
         // function calls the get api on cars
         //  and then sets cars array, which in turn 
@@ -40,9 +39,9 @@ const Dashboard = () => {
         fetchCars();
         // note need to fully define eventSource here for it to close properly
         const eventSource = new EventSource("http://localhost:8099/mono-sse?user=sseClient")
-        eventSource.addEventListener('single-event', (e) => {
+        eventSource.addEventListener('single-event', (event) => {
             //console.log('SSE Data', e.data);
-            const item = JSON.parse(e.data);
+            const item = JSON.parse(event.data);
             testArray.push(item);
             processEventArray(testArray);
         });

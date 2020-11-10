@@ -39,6 +39,7 @@ const EditCar = (props) => {
     const [car, setCar] = useState({ brand: '', model: '', year: '', color: '', price: '' });
 
     const handleClickOpen = () => {
+        // car comes through on props as currentCar
         setCar({
             brand: props.car.brand, model: props.car.model, color: props.car.color,
             year: props.car.year, fuel: props.car.fuel, price: props.car.price
