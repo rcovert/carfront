@@ -73,8 +73,10 @@ export default function MenuAppBar() {
         setUser({ username: '', password: '' });
         sessionStorage.removeItem("jwt");
         setAuth(false);
-        //eventSource.close();
         history.push('/');
+        // need hard refresh to avoid odd problem with
+        // mui data grid on re-login
+        window.location.reload(true);
     };
 
     const fabs = [

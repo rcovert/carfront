@@ -1,8 +1,8 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import AppRouter from './routers/AppRouter';
 import CarFrontContext from './context/carfront-context';
-import FetchOneResource from './components/Test';
+
 // import carsReducer from './reducers/carsReducer.js';
 
 function App() {
