@@ -1,3 +1,5 @@
 //export const SERVER_URL = 'https://carbackend-learn.herokuapp.com/'
-export const SERVER_URL = 'http://localhost:8099/'
-export const API_LINK = 'http://localhost:8099/api/cars/'
+export const SERVER_URL = 'http://192.168.1.165:8099/'
+//export const SERVER_URL = 'http://localhost:8099/'
+export const SSE_LINK = 'http://192.168.1.165:8099/stream-sse4?user=sseClient'
+export const API_LINK = 'http://192.168.1.165:8099/api/cars/'

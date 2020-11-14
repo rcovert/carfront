@@ -1,31 +1,28 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
-import { DataGrid, RowData, GridApi } from "@material-ui/data-grid";
-import { API_LINK } from "../constants.js";
+import { DataGrid, GridApi } from "@material-ui/data-grid";
+import { API_LINK, SSE_LINK } from "../constants.js";
 import CarFrontContext from "../context/carfront-context";
 import { ToastContainer } from "react-toastify";
 import Header from "./Header";
 import AddCar from "./AddCar";
 import DeleteCar from "./DeleteCar";
 import EditCar from "./EditCar";
-import {
-  useDemoData,
-  randomInt,
-  randomUserName,
-} from "@material-ui/x-grid-data-generator";
+import { randomInt } from "@material-ui/x-grid-data-generator";
 
 const DataGridY = (props: any) => {
   const apiRef = useRef<GridApi | null>(null);
+
   console.log("apiRef.current: ", apiRef.current);
 
   let currentCar: any = {};
   let eventArray: any = [];
 
-  const { cars, isAddCar } = useContext(CarFrontContext);
+  const { cars, isAddCar, setCars } = useContext(CarFrontContext);
+  const localCars = useRef(cars);
 
   useEffect(() => {
-    //const rowModels = apiRef.current.getRowModels();
     const rowModels = apiRef.current?.getRowModels();
-    console.log("inside of use effect for cars: ", rowModels);
+    console.log("inside of use effect for cars: ", cars);
     if (rowModels) {
       apiRef.current?.setRowModels(
         rowModels.map((r) => {
@@ -37,49 +34,58 @@ const DataGridY = (props: any) => {
   }, [cars]);
 
   const processEventArray = (theArray: any) => {
-    //console.log("event array: ", theArray);
-    const rowModels = apiRef.current?.getRowModels();
+    // read the event off the queue, process and then pop off the array
+    const theEvent = JSON.stringify(theArray[0]);
+    const isUpdateable = (theEvent.indexOf("PUT") > 0 || theEvent.indexOf("POST") > 0|| theEvent.indexOf("DELETE") > 0)
+    console.log(isUpdateable);
+    console.log("event is: ", theEvent, theArray.length);
+    eventArray.pop();
     const rowModelsLen = apiRef.current!.getRowsCount() | 0;
-    console.log("rows in event process ", rowModels, rowModelsLen);
-    for (let inum in rowModels) {
-      console.log(Number(inum), rowModels[Number(inum)].data);
-    }
     // server side event received
     // simulate process of event by updating car in database and
     // reflect change to grid without doing fetchCars
     const theIndex = randomInt(0, rowModelsLen - 1);
-    console.log("the index is ", theIndex);
     if (rowModelsLen !== 0) {
       let currentCar = apiRef.current!.getRowModels()[theIndex].data;
-      console.log("current car is ", currentCar);
-      console.log("current car id is ", currentCar.id);
+      //console.log("current car is ", currentCar);
       apiRef.current?.updateRowData([
         {
           id: currentCar.id,
-          //color: {car.color === 'Green' ? 'Red' : 'Green'},
-          year: 2010,
-          color: "Green",
-        }
+          color: currentCar.color === "Green" ? "Red" : "Green",
+          year:
+            currentCar.year > 2010 ? currentCar.year - 1 : currentCar.year + 1,
+        },
       ]);
+      const rowModels = apiRef.current!.getRowModels();
+      apiRef.current?.setRowModels(
+        rowModels.map((r) => {
+          r.selected = r.data.color === "Green";
+          return r;
+        })
+      );
+      // copy local cars to car array
+      localCars.current = apiRef.current!.getRowModels();
+      //console.log("local cars are ", localCars.current);
+      let copyCars: any = [];
+      for (var val of localCars.current) {
+        copyCars.push(val.data);
+        //console.log(val.data);
+      }
+      if (isUpdateable) { props.fetchCars() }
     }
-
-    if (cars[0] !== undefined) {
-      console.log("cars from process eventArray ", cars);
-      console.log("cars from process eventArray ", cars[0].price);
-    }
+    
+    // local cars set in useEffect for cars - instance copy
   };
 
   useEffect(() => {
     // note need to fully define eventSource here for it to close properly
-    const eventSource = new EventSource(
-      "http://localhost:8099/mono-sse?user=sseClient"
-    );
+    const eventSource = new EventSource(SSE_LINK);
     eventSource.addEventListener("message", (evt: MessageEvent) => {
-      //console.log('SSE Data', e.data);
+      console.log("SSE Data", evt.data);
       const item = JSON.parse(evt.data);
       eventArray.push(item);
+      //console.log("event is: ", item);
       processEventArray(eventArray);
-      eventArray.pop(item);
     });
     return () => {
       eventSource.close();
