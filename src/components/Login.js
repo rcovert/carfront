@@ -53,7 +53,7 @@ const Login = () => {
             <ToastContainer autoClose={1500} />
             <form onSubmit={login}>
                 <TextField name="username"
-                    label="Username" onChange={handleChange} required={true} /><br />
+                    label="Username" onChange={handleChange} required={true} autoFocus/><br />
                 <TextField type="password" name="password"
                     label="Password" onChange={handleChange} required={true} /><br /><br />
                 <Button variant="outlined" color="primary" type="submit">
