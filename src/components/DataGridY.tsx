@@ -21,16 +21,17 @@ const DataGridY = (props: any) => {
   //const localCars = useRef(cars);
 
   useEffect(() => {
+    // thsi code demonstrates how to manipulate the datagrid api
     const rowModels = apiRef.current?.getRowModels();
     //console.log("inside of use effect for cars: ", cars);
-    if (rowModels) {
-      apiRef.current?.setRowModels(
-        rowModels.map((r) => {
-          r.selected = r.data.color === "Green";
-          return r;
-        })
-      );
-    }
+    // if (rowModels) {
+    //   apiRef.current?.setRowModels(
+    //     rowModels.map((r) => {
+    //       r.selected = r.data.color === "Green";
+    //       return r;
+    //     })
+    //   );
+    // }
   }, [cars]);
 
   const processEventArray = (theArray: any) => {
@@ -61,12 +62,12 @@ const DataGridY = (props: any) => {
       //   },
       // ]);
       const rowModels = apiRef.current!.getRowModels();
-      apiRef.current?.setRowModels(
-        rowModels.map((r) => {
-          r.selected = r.data.color === "Green";
-          return r;
-        })
-      );
+      // apiRef.current?.setRowModels(
+      //   rowModels.map((r) => {
+      //     r.selected = r.data.color === "Green";
+      //     return r;
+      //   })
+      // );
     }
     if (isUpdateable) {
       toast.info("Updated table!", {
