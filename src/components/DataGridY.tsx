@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState, useRef } from "react";
 import { DataGrid, GridApi } from "@material-ui/data-grid";
 import { API_LINK, SSE_LINK } from "../constants.js";
 import CarFrontContext from "../context/carfront-context";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import Header from "./Header";
 import AddCar from "./AddCar";
 import DeleteCar from "./DeleteCar";
@@ -18,11 +18,11 @@ const DataGridY = (props: any) => {
   let eventArray: any = [];
 
   const { cars, isAddCar, setCars } = useContext(CarFrontContext);
-  const localCars = useRef(cars);
+  //const localCars = useRef(cars);
 
   useEffect(() => {
     const rowModels = apiRef.current?.getRowModels();
-    console.log("inside of use effect for cars: ", cars);
+    //console.log("inside of use effect for cars: ", cars);
     if (rowModels) {
       apiRef.current?.setRowModels(
         rowModels.map((r) => {
@@ -35,10 +35,14 @@ const DataGridY = (props: any) => {
 
   const processEventArray = (theArray: any) => {
     // read the event off the queue, process and then pop off the array
+    // see scrap file for example on how to manipulate the table data api directly
     const theEvent = JSON.stringify(theArray[0]);
-    const isUpdateable = (theEvent.indexOf("PUT") > 0 || theEvent.indexOf("POST") > 0|| theEvent.indexOf("DELETE") > 0)
-    console.log(isUpdateable);
     console.log("event is: ", theEvent, theArray.length);
+    const isUpdateable =
+      theEvent.indexOf("PUT") > 0 ||
+      theEvent.indexOf("POST") > 0 ||
+      theEvent.indexOf("DELETE") > 0;
+    console.log(isUpdateable);
     eventArray.pop();
     const rowModelsLen = apiRef.current!.getRowsCount() | 0;
     // server side event received
@@ -48,14 +52,14 @@ const DataGridY = (props: any) => {
     if (rowModelsLen !== 0) {
       let currentCar = apiRef.current!.getRowModels()[theIndex].data;
       //console.log("current car is ", currentCar);
-      apiRef.current?.updateRowData([
-        {
-          id: currentCar.id,
-          color: currentCar.color === "Green" ? "Red" : "Green",
-          year:
-            currentCar.year > 2010 ? currentCar.year - 1 : currentCar.year + 1,
-        },
-      ]);
+      // apiRef.current?.updateRowData([
+      //   {
+      //     id: currentCar.id,
+      //     color: currentCar.color === "Green" ? "Red" : "Green",
+      //     year:
+      //       currentCar.year > 2010 ? currentCar.year - 1 : currentCar.year + 1,
+      //   },
+      // ]);
       const rowModels = apiRef.current!.getRowModels();
       apiRef.current?.setRowModels(
         rowModels.map((r) => {
@@ -63,17 +67,13 @@ const DataGridY = (props: any) => {
           return r;
         })
       );
-      // copy local cars to car array
-      localCars.current = apiRef.current!.getRowModels();
-      //console.log("local cars are ", localCars.current);
-      let copyCars: any = [];
-      for (var val of localCars.current) {
-        copyCars.push(val.data);
-        //console.log(val.data);
-      }
-      if (isUpdateable) { props.fetchCars() }
     }
-    
+    if (isUpdateable) {
+      toast.info("Updated table!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+    });
+      props.fetchCars();
+    }
     // local cars set in useEffect for cars - instance copy
   };
 
@@ -81,10 +81,9 @@ const DataGridY = (props: any) => {
     // note need to fully define eventSource here for it to close properly
     const eventSource = new EventSource(SSE_LINK);
     eventSource.addEventListener("message", (evt: MessageEvent) => {
-      console.log("SSE Data", evt.data);
+      //console.log("SSE Data", evt.data);
       const item = JSON.parse(evt.data);
       eventArray.push(item);
-      //console.log("event is: ", item);
       processEventArray(eventArray);
     });
     return () => {
