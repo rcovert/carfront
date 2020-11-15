@@ -24,26 +24,26 @@ const DataGridY = (props: any) => {
     // thsi code demonstrates how to manipulate the datagrid api
     const rowModels = apiRef.current?.getRowModels();
     //console.log("inside of use effect for cars: ", cars);
-    // if (rowModels) {
-    //   apiRef.current?.setRowModels(
-    //     rowModels.map((r) => {
-    //       r.selected = r.data.color === "Green";
-    //       return r;
-    //     })
-    //   );
-    // }
+    if (rowModels) {
+      apiRef.current?.setRowModels(
+        rowModels.map((r) => {
+          r.selected = r.data.color === "Greenhhhhh";
+          return r;
+        })
+      );
+    }
   }, [cars]);
 
   const processEventArray = (theArray: any) => {
     // read the event off the queue, process and then pop off the array
     // see scrap file for example on how to manipulate the table data api directly
     const theEvent = JSON.stringify(theArray[0]);
-    console.log("event is: ", theEvent, theArray.length);
+    //console.log("event is: ", theEvent, theArray.length);
     const isUpdateable =
       theEvent.indexOf("PUT") > 0 ||
       theEvent.indexOf("POST") > 0 ||
       theEvent.indexOf("DELETE") > 0;
-    console.log(isUpdateable);
+    //console.log(isUpdateable);
     eventArray.pop();
     const rowModelsLen = apiRef.current!.getRowsCount() | 0;
     // server side event received

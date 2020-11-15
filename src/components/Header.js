@@ -17,7 +17,6 @@ import Menu from '@material-ui/core/Menu';
 import { useHistory } from "react-router-dom";
 import CarFrontContext from '../context/carfront-context';
 // eslint-disable-next-line no-unused-vars
-import { unstable_createMuiStrictModeTheme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     root: {
