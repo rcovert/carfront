@@ -21,6 +21,7 @@
     "react-data-grid": "^7.0.0-canary.26",
     "react-dom": "^17.0.1",
     "react-hooks-sse": "^2.0.0",
+    "react-idle-timer": "^4.5.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.4",
     "react-table": "^7.6.0",

@@ -38,20 +38,20 @@ const DataGridY = (props: any) => {
     // read the event off the queue, process and then pop off the array
     // see scrap file for example on how to manipulate the table data api directly
     const theEvent = JSON.stringify(theArray[0]);
-    //console.log("event is: ", theEvent, theArray.length);
+    console.log("event is: ", theEvent, theArray.length);
     const isUpdateable =
       theEvent.indexOf("PUT") > 0 ||
       theEvent.indexOf("POST") > 0 ||
       theEvent.indexOf("DELETE") > 0;
     //console.log(isUpdateable);
     eventArray.pop();
-    const rowModelsLen = apiRef.current!.getRowsCount() | 0;
+    //const rowModelsLen = apiRef.current!.getRowsCount() | 0;
     // server side event received
     // simulate process of event by updating car in database and
     // reflect change to grid without doing fetchCars
-    const theIndex = randomInt(0, rowModelsLen - 1);
-    if (rowModelsLen !== 0) {
-      let currentCar = apiRef.current!.getRowModels()[theIndex].data;
+   // const theIndex = randomInt(0, rowModelsLen - 1);
+    //if (rowModelsLen !== 0) {
+ //     let currentCar = apiRef.current!.getRowModels()[theIndex].data;
       //console.log("current car is ", currentCar);
       // apiRef.current?.updateRowData([
       //   {
@@ -61,14 +61,14 @@ const DataGridY = (props: any) => {
       //       currentCar.year > 2010 ? currentCar.year - 1 : currentCar.year + 1,
       //   },
       // ]);
-      const rowModels = apiRef.current!.getRowModels();
+//      const rowModels = apiRef.current!.getRowModels();
       // apiRef.current?.setRowModels(
       //   rowModels.map((r) => {
       //     r.selected = r.data.color === "Green";
       //     return r;
       //   })
       // );
-    }
+//    }
     if (isUpdateable) {
       toast.info("Updated table!", {
         position: toast.POSITION.BOTTOM_RIGHT

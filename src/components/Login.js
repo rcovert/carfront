@@ -36,7 +36,7 @@ const Login = () => {
                 if (jwtToken !== null) {
                     sessionStorage.setItem("jwt", jwtToken);
                     setAuth(true);
-                    history.push('/carlist');
+                    history.push('/dashboard');
                 }
                 else {
                     toast.warn("Check your username and password.", {
@@ -48,18 +48,23 @@ const Login = () => {
     }
 
     return (
-        <div>
+        <div >
             <Header />
             <ToastContainer autoClose={1500} />
-            <form onSubmit={login}>
-                <TextField name="username"
-                    label="Username" onChange={handleChange} required={true} autoFocus/><br />
-                <TextField type="password" name="password"
-                    label="Password" onChange={handleChange} required={true} /><br /><br />
-                <Button variant="outlined" color="primary" type="submit">
-                    Login
+            <div style={{
+                position: 'absolute', left: '50%', top: '50%',
+                transform: 'translate(-50%, -50%)'
+            }}>
+                <form onSubmit={login}>
+                    <TextField name="username"
+                        label="Username" onChange={handleChange} required={true} autoFocus /><br />
+                    <TextField type="password" name="password"
+                        label="Password" onChange={handleChange} required={true} /><br /><br />
+                    <Button variant="outlined" color="primary" type="submit">
+                        Login
                 </Button>
-            </form>
+                </form>
+            </div>
         </div>
     );
 }
