@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
-import { DataGrid, GridApi } from "@material-ui/data-grid";
+import { DataGrid, GridApi, GridOverlay } from "@material-ui/data-grid";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import { API_LINK, SSE_LINK } from "../constants.js";
 import CarFrontContext from "../context/carfront-context";
 import { ToastContainer, toast } from "react-toastify";
@@ -18,12 +19,11 @@ const DataGridY = (props: any) => {
   let eventArray: any = [];
 
   const { cars, isAddCar, setCars } = useContext(CarFrontContext);
-  //const localCars = useRef(cars);
 
   useEffect(() => {
-    // thsi code demonstrates how to manipulate the datagrid api
+    // this code demonstrates how to manipulate the datagrid api
     const rowModels = apiRef.current?.getRowModels();
-    //console.log("inside of use effect for cars: ", cars);
+    console.log("inside of use effect for cars: ", cars);
     if (rowModels) {
       apiRef.current?.setRowModels(
         rowModels.map((r) => {
@@ -39,43 +39,34 @@ const DataGridY = (props: any) => {
     // see scrap file for example on how to manipulate the table data api directly
     const theEvent = JSON.stringify(theArray[0]);
     console.log("event is: ", theEvent, theArray.length);
-    const isUpdateable =
-      theEvent.indexOf("PUT") > 0 ||
-      theEvent.indexOf("POST") > 0 ||
-      theEvent.indexOf("DELETE") > 0;
-    //console.log(isUpdateable);
     eventArray.pop();
-    //const rowModelsLen = apiRef.current!.getRowsCount() | 0;
+    const rowModelsLen = apiRef.current!.getRowsCount() | 0;
     // server side event received
     // simulate process of event by updating car in database and
     // reflect change to grid without doing fetchCars
-   // const theIndex = randomInt(0, rowModelsLen - 1);
-    //if (rowModelsLen !== 0) {
- //     let currentCar = apiRef.current!.getRowModels()[theIndex].data;
+    const theIndex = randomInt(0, rowModelsLen - 1);
+    if (rowModelsLen !== 0) {
+         let currentCar = apiRef.current!.getRowModels()[theIndex].data;
       //console.log("current car is ", currentCar);
-      // apiRef.current?.updateRowData([
-      //   {
-      //     id: currentCar.id,
-      //     color: currentCar.color === "Green" ? "Red" : "Green",
-      //     year:
-      //       currentCar.year > 2010 ? currentCar.year - 1 : currentCar.year + 1,
-      //   },
-      // ]);
-//      const rowModels = apiRef.current!.getRowModels();
-      // apiRef.current?.setRowModels(
-      //   rowModels.map((r) => {
-      //     r.selected = r.data.color === "Green";
-      //     return r;
-      //   })
-      // );
-//    }
-    if (isUpdateable) {
-      toast.info("Updated table!", {
-        position: toast.POSITION.BOTTOM_RIGHT
-    });
-      props.fetchCars();
+      apiRef.current?.updateRowData([
+        {
+          id: currentCar.id,
+          color: currentCar.color === "Green" ? "Red" : "Green",
+          year:
+            currentCar.year > 2010 ? currentCar.year - 1 : currentCar.year + 1,
+        },
+      ]);
+      const rowModels = apiRef.current!.getRowModels();
+      apiRef.current?.setRowModels(
+        rowModels.map((r) => {
+          r.selected = r.data.color === "Green";
+          return r;
+        })
+      );
     }
-    // local cars set in useEffect for cars - instance copy
+
+    props.fetchCars();
+    toast.info("Table updated!", { position: toast.POSITION.BOTTOM_RIGHT });
   };
 
   useEffect(() => {
@@ -101,7 +92,17 @@ const DataGridY = (props: any) => {
 
   function handleOnRowSelected(RowParams: { data: {} }) {
     currentCar = RowParams.data;
-    //console.log("current car is ", currentCar);
+    console.log("current car is ", currentCar);
+  }
+
+  function CustomLoadingOverlay() {
+    return (
+      <GridOverlay>
+        <div style={{ position: "absolute", top: 0, width: "100%" }}>
+          <LinearProgress />
+        </div>
+      </GridOverlay>
+    );
   }
 
   const columns = [
@@ -173,6 +174,7 @@ const DataGridY = (props: any) => {
               }
               return <div>No rows</div>;
             },
+            loadingOverlay: CustomLoadingOverlay,
           }}
         />
       </div>
