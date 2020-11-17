@@ -1,6 +1,5 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
 import { DataGrid, GridApi, GridOverlay } from "@material-ui/data-grid";
-import LinearProgress from "@material-ui/core/LinearProgress";
 import { API_LINK, SSE_LINK } from "../constants.js";
 import CarFrontContext from "../context/carfront-context";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,17 +12,16 @@ import { randomInt } from "@material-ui/x-grid-data-generator";
 const DataGridY = (props: any) => {
   const apiRef = useRef<GridApi | null>(null);
 
-  console.log("apiRef.current: ", apiRef.current);
+  //console.log("apiRef.current: ", apiRef.current);
 
   let currentCar: any = {};
   let eventArray: any = [];
 
-  const { cars, isAddCar, setCars } = useContext(CarFrontContext);
+  const { cars, isAddCar } = useContext(CarFrontContext);
 
   useEffect(() => {
     // this code demonstrates how to manipulate the datagrid api
     const rowModels = apiRef.current?.getRowModels();
-    console.log("inside of use effect for cars: ", cars);
     if (rowModels) {
       apiRef.current?.setRowModels(
         rowModels.map((r) => {
@@ -31,6 +29,8 @@ const DataGridY = (props: any) => {
           return r;
         })
       );
+      console.log("inside of use effect for cars: ", cars);
+      console.log("apiRef.current: we have handle to grid api", apiRef.current);
     }
   }, [cars]);
 
@@ -40,30 +40,31 @@ const DataGridY = (props: any) => {
     const theEvent = JSON.stringify(theArray[0]);
     console.log("event is: ", theEvent, theArray.length);
     eventArray.pop();
-    const rowModelsLen = apiRef.current!.getRowsCount() | 0;
+    const rowModels = apiRef.current?.getRowModels();
+    const rowModelsLen = apiRef.current?.getRowsCount();
     // server side event received
     // simulate process of event by updating car in database and
     // reflect change to grid without doing fetchCars
-    const theIndex = randomInt(0, rowModelsLen - 1);
-    if (rowModelsLen !== 0) {
-         let currentCar = apiRef.current!.getRowModels()[theIndex].data;
-      //console.log("current car is ", currentCar);
-      apiRef.current?.updateRowData([
-        {
-          id: currentCar.id,
-          color: currentCar.color === "Green" ? "Red" : "Green",
-          year:
-            currentCar.year > 2010 ? currentCar.year - 1 : currentCar.year + 1,
-        },
-      ]);
-      const rowModels = apiRef.current!.getRowModels();
-      apiRef.current?.setRowModels(
-        rowModels.map((r) => {
-          r.selected = r.data.color === "Green";
-          return r;
-        })
-      );
-    }
+    //const theIndex = randomInt(0, rowModelsLen - 1);
+    //if (rowModelsLen !== 0 && rowModels) {
+    // let currentCar = apiRef.current!.getRowModels()[theIndex].data;
+    // //console.log("current car is ", currentCar);
+    // apiRef.current?.updateRowData([
+    //   {
+    //     id: currentCar.id,
+    //     color: currentCar.color === "Green" ? "Red" : "Green",
+    //     year:
+    //       currentCar.year > 2010 ? currentCar.year - 1 : currentCar.year + 1,
+    //   },
+    // ]);
+    //const rowModels = apiRef.current!.getRowModels();
+    //apiRef.current?.setRowModels(
+    //  rowModels.map((r) => {
+    //    r.selected = r.data.color === "Green";
+    //    return r;
+    //  })
+    //);
+    //}
 
     props.fetchCars();
     toast.info("Table updated!", { position: toast.POSITION.BOTTOM_RIGHT });
@@ -92,17 +93,7 @@ const DataGridY = (props: any) => {
 
   function handleOnRowSelected(RowParams: { data: {} }) {
     currentCar = RowParams.data;
-    console.log("current car is ", currentCar);
-  }
-
-  function CustomLoadingOverlay() {
-    return (
-      <GridOverlay>
-        <div style={{ position: "absolute", top: 0, width: "100%" }}>
-          <LinearProgress />
-        </div>
-      </GridOverlay>
-    );
+    //console.log("current car is ", currentCar);
   }
 
   const columns = [
@@ -161,8 +152,6 @@ const DataGridY = (props: any) => {
       <Header />
       <div style={{ height: 500, width: "100%" }}>
         <DataGrid
-          rows={cars}
-          columns={columns}
           pageSize={10}
           checkboxSelection
           onRowHover={handleOnRowHover}
@@ -174,8 +163,9 @@ const DataGridY = (props: any) => {
               }
               return <div>No rows</div>;
             },
-            loadingOverlay: CustomLoadingOverlay,
           }}
+          rows={cars}
+          columns={columns}
         />
       </div>
       {isAddCar ? <AddCar fetchCars={props.fetchCars} /> : null}

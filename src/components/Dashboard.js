@@ -10,7 +10,6 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { ToastContainer, toast } from "react-toastify";
 
 const Dashboard = () => {
 
@@ -88,12 +87,13 @@ const Dashboard = () => {
     const options = {
       headers: {'Authorization': token}
     };
-    console.log("fetch called...")
+    //console.log("fetch called...")
     setIsLoading(true);
     const result = await axios.get(SERVER_URL + "api/cars", options);
+    
     setCars(result.data._embedded.cars);
     setIsLoading(false);
-    console.log(result.data);
+    //console.log(result.data);
       
     return result;
   }
@@ -106,9 +106,7 @@ const Dashboard = () => {
 
   return (
     <div style={{ height: 500, width: "100%" }}>
-       <ToastContainer autoClose={500} />
-      {isLoading ? (
-        toast.info("Table updated!", { position: toast.POSITION.BOTTOM_RIGHT }) ) : (<DataGridY fetchCars={fetchCars} />)}
+      <DataGridY fetchCars={fetchCars} isLoading={isLoading}/>
       {showModal && (
         <div>
           <Dialog open={open} >
