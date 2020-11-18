@@ -23,13 +23,13 @@ const DataGridY = (props: any) => {
     // this code demonstrates how to manipulate the datagrid api
     const rowModels = apiRef.current?.getRowModels();
     if (rowModels) {
-      apiRef.current?.setRowModels(
-        rowModels.map((r) => {
-          r.selected = r.data.color === "Greenhhhhh";
-          return r;
-        })
-      );
-      console.log("inside of use effect for cars: ", cars);
+      // apiRef.current?.setRowModels(
+      //   rowModels.map((r) => {
+      //     r.selected = r.data.color === "Greenhhhhh";
+      //     return r;
+      //   })
+      // );
+      //console.log("inside of use effect for cars: ", cars);
       console.log("apiRef.current: we have handle to grid api", apiRef.current);
     }
   }, [cars]);
@@ -42,30 +42,6 @@ const DataGridY = (props: any) => {
     eventArray.pop();
     const rowModels = apiRef.current?.getRowModels();
     const rowModelsLen = apiRef.current?.getRowsCount();
-    // server side event received
-    // simulate process of event by updating car in database and
-    // reflect change to grid without doing fetchCars
-    //const theIndex = randomInt(0, rowModelsLen - 1);
-    //if (rowModelsLen !== 0 && rowModels) {
-    // let currentCar = apiRef.current!.getRowModels()[theIndex].data;
-    // //console.log("current car is ", currentCar);
-    // apiRef.current?.updateRowData([
-    //   {
-    //     id: currentCar.id,
-    //     color: currentCar.color === "Green" ? "Red" : "Green",
-    //     year:
-    //       currentCar.year > 2010 ? currentCar.year - 1 : currentCar.year + 1,
-    //   },
-    // ]);
-    //const rowModels = apiRef.current!.getRowModels();
-    //apiRef.current?.setRowModels(
-    //  rowModels.map((r) => {
-    //    r.selected = r.data.color === "Green";
-    //    return r;
-    //  })
-    //);
-    //}
-
     props.fetchCars();
     toast.info("Table updated!", { position: toast.POSITION.BOTTOM_RIGHT });
   };
